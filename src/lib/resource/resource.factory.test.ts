@@ -197,7 +197,7 @@ export class UsersService {
     private readonly usersRepository: Repository<User>
   ) {}
 
-  public async create(user: BannerMember, createUserDto: CreateUserDto): Promise<User> {
+  public async create(user: BannerMember, dto: CreateUserDto): Promise<User> {
     const user = this.dtoToModel(dto);
 
     // TODO Adjust if the data is not associated with a banner
@@ -226,7 +226,7 @@ export class UsersService {
     });
   }
 
-  public async update(user: BannerMember, id: string, updateUserDto: UpdateUserDto): Promise<User> {
+  public async update(user: BannerMember, id: string, dto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(user, id);
     const updates = this.dtoToModel(dto);
     return this.usersRepository.save(
@@ -308,7 +308,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {}
 import { getDataSource } from '@vori/providers/database';
 
 import { makeUser } from '../fakers/user.faker';
-import { UserDto } from './user.dto'; }
+import { UserDto } from './user.dto';
 
 describe('UserDto', () => {
   beforeAll(async () => {
@@ -611,15 +611,21 @@ describe('/v1/users', () => {
 
     it('should generate "UsersController" spec file', () => {
       expect(tree.readContent('/users/users.controller.spec.ts'))
-        .toEqual(`import { Test, TestingModule } from '@nestjs/testing';
+        .toEqual(`import { TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { createTestingModule } from '@vori/nest/libs/test_helpers';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { User } from './entities/user.entity';
 
 describe('UsersController', () => {
   let controller: UsersController;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const module: TestingModule = await createTestingModule({
+      imports: [
+        TypeOrmModule.forFeature([User]),
+      ],
       controllers: [UsersController],
       providers: [UsersService],
     }).compile();
@@ -938,7 +944,7 @@ export class UsersService {
     private readonly usersRepository: Repository<User>
   ) {}
 
-  public async create(user: BannerMember, createUserDto: CreateUserDto): Promise<User> {
+  public async create(user: BannerMember, dto: CreateUserDto): Promise<User> {
     return 'This action adds a new user';
   }
 
@@ -950,7 +956,7 @@ export class UsersService {
     return \`This action returns a #\${id} user\`;
   }
 
-  public async update(user: BannerMember, id: string, updateUserDto: UpdateUserDto): Promise<User> {
+  public async update(user: BannerMember, id: string, dto: UpdateUserDto): Promise<User> {
     return \`This action updates a #\${id} user\`;
   }
 
@@ -1013,15 +1019,21 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {}
 
     it('should generate "UsersController" spec file', () => {
       expect(tree.readContent('/users/users.controller.spec.ts'))
-        .toEqual(`import { Test, TestingModule } from '@nestjs/testing';
+        .toEqual(`import { TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { createTestingModule } from '@vori/nest/libs/test_helpers';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { User } from './entities/user.entity';
 
 describe('UsersController', () => {
   let controller: UsersController;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const module: TestingModule = await createTestingModule({
+      imports: [
+        TypeOrmModule.forFeature([User]),
+      ],
       controllers: [UsersController],
       providers: [UsersService],
     }).compile();
@@ -1297,7 +1309,7 @@ export class UsersService {
     private readonly usersRepository: Repository<User>
   ) {}
 
-  public async create(user: BannerMember, createUserDto: CreateUserDto): Promise<User> {
+  public async create(user: BannerMember, dto: CreateUserDto): Promise<User> {
     return 'This action adds a new user';
   }
 
@@ -1309,7 +1321,7 @@ export class UsersService {
     return \`This action returns a #\${id} user\`;
   }
 
-  public async update(user: BannerMember, id: string, updateUserDto: UpdateUserDto): Promise<User> {
+  public async update(user: BannerMember, id: string, dto: UpdateUserDto): Promise<User> {
     return \`This action updates a #\${id} user\`;
   }
 
