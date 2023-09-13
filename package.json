@@ -1,5 +1,5 @@
 {
-  "name": "@voriteam/nest-schematics",
+  "name": "@vori/nest-schematics",
   "repository": {
     "type": "git",
     "url": "https://github.com/voriteam/nest-schematics.git"
