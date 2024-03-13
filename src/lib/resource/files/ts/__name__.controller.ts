@@ -31,7 +31,7 @@ export class <%= classify(name) %>Controller {
     @Body() create<%= singular(classify(name)) %>Dto: Create<%= singular(classify(name)) %>Dto
   ): Promise<<%= singular(classify(name)) %>Dto> {
     const <%= singular(camelize(name)) %> = await this.<%= lowercased(name) %>Service.create(request.user, create<%= singular(classify(name)) %>Dto);
-    return <%= singular(classify(name)) %>Dto.from(<%= singular(camelize(name)) %>);
+    return new <%= singular(classify(name)) %>Dto(<%= singular(camelize(name)) %>);
   }
 
   @ApiOperation({ operationId: 'list<%= singular(classify(name)) %>' })
@@ -39,7 +39,7 @@ export class <%= classify(name) %>Controller {
   @Get()
   public async findAll(@Req() request: RequestWithBannerUser): Promise<<%= singular(classify(name)) %>Dto[]> {
     const <%= camelize(name) %> = await this.<%= lowercased(name) %>Service.findAll(request.user);
-    return <%= camelize(name) %>.map(<%= singular(classify(name)) %>Dto.from);
+    return <%= camelize(name) %>.map(<%= singular(camelize(name)) %> => new <%= singular(classify(name)) %>Dto(<%= singular(camelize(name)) %>));
   }
 
   @ApiOperation({ operationId: 'get<%= singular(classify(name)) %>' })
@@ -48,7 +48,7 @@ export class <%= classify(name) %>Controller {
   @Get(':id')
   public async findOne(@Req() request: RequestWithBannerUser, @Param() params: FindOneParams) {
     const <%= singular(camelize(name)) %> = await this.<%= lowercased(name) %>Service.findOne(request.user, params.id);
-    return <%= singular(classify(name)) %>Dto.from(<%= singular(camelize(name)) %>);
+    return new <%= singular(classify(name)) %>Dto(<%= singular(camelize(name)) %>);
   }
 
   @ApiOperation({ operationId: 'update<%= singular(classify(name)) %>' })
@@ -58,7 +58,7 @@ export class <%= classify(name) %>Controller {
   @Patch(':id')
   public async update(@Req() request: RequestWithBannerUser, @Param() params: FindOneParams, @Body() update<%= singular(classify(name)) %>Dto: Update<%= singular(classify(name)) %>Dto) {
     const <%= singular(camelize(name)) %> = await this.<%= lowercased(name) %>Service.update(request.user, params.id, update<%= singular(classify(name)) %>Dto);
-    return <%= singular(classify(name)) %>Dto.from(<%= singular(camelize(name)) %>);
+    return new <%= singular(classify(name)) %>Dto(<%= singular(camelize(name)) %>);
   }
 
   @ApiOperation({ operationId: 'delete<%= singular(classify(name)) %>' })

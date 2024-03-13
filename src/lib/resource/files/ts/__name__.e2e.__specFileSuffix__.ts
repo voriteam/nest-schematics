@@ -94,7 +94,7 @@ describe('/v1/<%= dasherize(name) %>', () => {
       // TODO Assert values stored in database
 
       expect(response.body).toEqual(
-        instanceToPlain(<%= singular(classify(name)) %>Dto.from(<%= singular(camelize(name)) %>))
+        instanceToPlain(new <%= singular(classify(name)) %>Dto(<%= singular(camelize(name)) %>))
       );
     });
   });
@@ -128,7 +128,7 @@ describe('/v1/<%= dasherize(name) %>', () => {
         .expect(200);
       expect(response.body).toEqual(
         orderBy(<%= camelize(name) %>, 'createdAt', 'desc').map(
-          <%= singular(classify(name)) %>Dto.from
+          <%= singular(camelize(name)) %> => new <%= singular(classify(name)) %>Dto(<%= singular(camelize(name)) %>)
         )
       );
     });
@@ -160,7 +160,7 @@ describe('/v1/<%= dasherize(name) %>', () => {
         .expect(200);
 
       expect(response.body).toEqual(
-        instanceToPlain(<%= singular(classify(name)) %>Dto.from(<%= singular(camelize(name)) %>))
+        instanceToPlain(new <%= singular(classify(name)) %>Dto(<%= singular(camelize(name)) %>))
       );
     });
   });
@@ -212,7 +212,7 @@ describe('/v1/<%= dasherize(name) %>', () => {
 
       expect(response.body).toEqual(
         instanceToPlain(
-          <%= singular(classify(name)) %>Dto.from(reloaded<%= singular(classify(name)) %>)
+          new <%= singular(classify(name)) %>Dto(reloaded<%= singular(classify(name)) %>)
         )
       );
     });
