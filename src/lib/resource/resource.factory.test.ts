@@ -138,7 +138,7 @@ export class UsersController {
     @Body() createUserDto: CreateUserDto
   ): Promise<UserDto> {
     const user = await this.usersService.create(request.user, createUserDto);
-    return UserDto.from(user);
+    return new UserDto(user);
   }
 
   @ApiOperation({ operationId: 'listUser' })
@@ -146,7 +146,7 @@ export class UsersController {
   @Get()
   public async findAll(@Req() request: RequestWithBannerUser): Promise<UserDto[]> {
     const users = await this.usersService.findAll(request.user);
-    return users.map(UserDto.from);
+    return users.map(user => new UserDto(user));
   }
 
   @ApiOperation({ operationId: 'getUser' })
@@ -155,7 +155,7 @@ export class UsersController {
   @Get(':id')
   public async findOne(@Req() request: RequestWithBannerUser, @Param() params: FindOneParams) {
     const user = await this.usersService.findOne(request.user, params.id);
-    return UserDto.from(user);
+    return new UserDto(user);
   }
 
   @ApiOperation({ operationId: 'updateUser' })
@@ -165,7 +165,7 @@ export class UsersController {
   @Patch(':id')
   public async update(@Req() request: RequestWithBannerUser, @Param() params: FindOneParams, @Body() updateUserDto: UpdateUserDto) {
     const user = await this.usersService.update(request.user, params.id, updateUserDto);
-    return UserDto.from(user);
+    return new UserDto(user);
   }
 
   @ApiOperation({ operationId: 'deleteUser' })
@@ -283,14 +283,12 @@ export class User extends BaseEntity {}
     it('should generate "CreateUserDto" and "UpdateUserDto" classes', () => {
       expect(tree.readContent('/users/dto/user.dto.ts')).toEqual(
         `import { PartialType } from '@nestjs/swagger';
-import { BaseEntityDto } from '@vori/nest/libs/dto';
+import { BaseEntityDto } from '@vori/nest/libs/dto/base-entity.dto';
 import { User } from '../entities/user.entity';
 
 export class UserDto extends BaseEntityDto {
-  public static from(user: User): UserDto {
-    return {
-      ...BaseEntityDto.from(user),
-    };
+  public constructor(user: User) {
+    super(user);
   }
 }
 
@@ -304,6 +302,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {}
     it('should generate "UserDto" spec file', () => {
       expect(tree.readContent('/users/dto/user.dto.spec.ts')).toEqual(
         `import { faker } from '@faker-js/faker';
+import { instanceToPlain } from 'class-transformer';
 
 import { getDataSource } from '@vori/providers/database';
 
@@ -315,12 +314,12 @@ describe('UserDto', () => {
     await getDataSource();
   });
 
-  describe('from', () => {
+  describe('constructor', () => {
     it('converts an entity to a DTO', () => {
       const user = makeUser({
         id: faker.datatype.number({ min: 1 }).toString(),
       });
-      const dto = UserDto.from(user);
+      const dto = instanceToPlain(new UserDto(user));
 
       expect(dto).toMatchObject({
         id: user.id,
@@ -432,7 +431,7 @@ describe('/v1/users', () => {
       // TODO Assert values stored in database
 
       expect(response.body).toEqual(
-        instanceToPlain(UserDto.from(user))
+        instanceToPlain(new UserDto(user))
       );
     });
   });
@@ -466,7 +465,7 @@ describe('/v1/users', () => {
         .expect(200);
       expect(response.body).toEqual(
         orderBy(users, 'createdAt', 'desc').map(
-          UserDto.from
+          user => new UserDto(user)
         )
       );
     });
@@ -498,7 +497,7 @@ describe('/v1/users', () => {
         .expect(200);
 
       expect(response.body).toEqual(
-        instanceToPlain(UserDto.from(user))
+        instanceToPlain(new UserDto(user))
       );
     });
   });
@@ -550,7 +549,7 @@ describe('/v1/users', () => {
 
       expect(response.body).toEqual(
         instanceToPlain(
-          UserDto.from(reloadedUser)
+          new UserDto(reloadedUser)
         )
       );
     });
@@ -987,14 +986,12 @@ export class User extends BaseEntity {}
     it('should generate "CreateUserDto" and "UpdateUserDto" classes', () => {
       expect(tree.readContent('/users/dto/user.dto.ts')).toEqual(
         `import { PartialType } from '@nestjs/mapped-types';
-import { BaseEntityDto } from '@vori/nest/libs/dto';
+import { BaseEntityDto } from '@vori/nest/libs/dto/base-entity.dto';
 import { User } from '../entities/user.entity';
 
 export class UserDto extends BaseEntityDto {
-  public static from(user: User): UserDto {
-    return {
-      ...BaseEntityDto.from(user),
-    };
+  public constructor(user: User) {
+    super(user);
   }
 }
 
@@ -1350,14 +1347,12 @@ export class User extends BaseEntity {}
     it('should generate "CreateUserDto" and "UpdateUserDto" classes', () => {
       expect(tree.readContent('/users/dto/user.dto.ts')).toEqual(
         `import { PartialType } from '@nestjs/mapped-types';
-import { BaseEntityDto } from '@vori/nest/libs/dto';
+import { BaseEntityDto } from '@vori/nest/libs/dto/base-entity.dto';
 import { User } from '../entities/user.entity';
 
 export class UserDto extends BaseEntityDto {
-  public static from(user: User): UserDto {
-    return {
-      ...BaseEntityDto.from(user),
-    };
+  public constructor(user: User) {
+    super(user);
   }
 }
 

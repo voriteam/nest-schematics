@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { instanceToPlain } from 'class-transformer';
 
 import { getDataSource } from '@vori/providers/database';
 
@@ -10,12 +11,12 @@ describe('<%= singular(classify(name)) %>Dto', () => {
     await getDataSource();
   });
 
-  describe('from', () => {
+  describe('constructor', () => {
     it('converts an entity to a DTO', () => {
       const <%= singular(camelize(name)) %> = make<%= singular(classify(name)) %>({
         id: faker.datatype.number({ min: 1 }).toString(),
       });
-      const dto = <%= singular(classify(name)) %>Dto.from(<%= singular(camelize(name)) %>);
+      const dto = instanceToPlain(new <%= singular(classify(name)) %>Dto(<%= singular(camelize(name)) %>));
 
       expect(dto).toMatchObject({
         id: <%= singular(camelize(name)) %>.id,
