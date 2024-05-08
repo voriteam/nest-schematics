@@ -86,11 +86,10 @@ describe('/v1/<%= dasherize(name) %>', () => {
         .send(instanceToPlain(body))
         .expect(201);
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const <%= singular(camelize(name)) %> = await <%= lowercased(name) %>Service.findOne(
-        user!,
-        response.body.id
-      );
+      const <%= singular(camelize(name)) %> = await <%= lowercased(name) %>Service.findOne({
+        bannerID: banner.id,
+        id: response.body.id,
+      });
       // TODO Assert values stored in database
 
       expect(response.body).toEqual(

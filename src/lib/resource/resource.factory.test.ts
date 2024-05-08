@@ -422,11 +422,10 @@ describe('/v1/users', () => {
         .send(instanceToPlain(body))
         .expect(201);
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const user = await usersService.findOne(
-        user!,
-        response.body.id
-      );
+      const user = await usersService.findOne({
+        bannerID: banner.id,
+        id: response.body.id,
+      });
       // TODO Assert values stored in database
 
       expect(response.body).toEqual(
