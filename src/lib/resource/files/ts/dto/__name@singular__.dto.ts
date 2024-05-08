@@ -8,6 +8,10 @@ export class <%= singular(classify(name)) %>Dto extends BaseEntityDto {
   }
 }
 
-export class Create<%= singular(classify(name)) %>Dto {}
+export class Create<%= singular(classify(name)) %>Dto {
+  public constructor(data?: Partial<Create<%= singular(classify(name)) %>Dto>) {
+    Object.assign(this, data);
+  }
+}
 
 export class Update<%= singular(classify(name)) %>Dto extends PartialType(Create<%= singular(classify(name)) %>Dto) {}

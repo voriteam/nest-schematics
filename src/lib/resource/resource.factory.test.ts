@@ -291,7 +291,11 @@ export class UserDto extends BaseEntityDto {
   }
 }
 
-export class CreateUserDto {}
+export class CreateUserDto {
+  public constructor(data?: Partial<CreateUserDto>) {
+    Object.assign(this, data);
+  }
+}
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {}
 `,
@@ -414,7 +418,7 @@ describe('/v1/users', () => {
 
     it('creates a new User', async () => {
       // TODO Add fields
-      const body: CreateUserDto = {};
+      const body: new CreateUserDto({});
 
       const response = await request(app.getHttpServer())
         .post('/v1/users')
@@ -991,7 +995,11 @@ export class UserDto extends BaseEntityDto {
   }
 }
 
-export class CreateUserDto {}
+export class CreateUserDto {
+  public constructor(data?: Partial<CreateUserDto>) {
+    Object.assign(this, data);
+  }
+}
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {}
 `,
@@ -1350,7 +1358,11 @@ export class UserDto extends BaseEntityDto {
   }
 }
 
-export class CreateUserDto {}
+export class CreateUserDto {
+  public constructor(data?: Partial<CreateUserDto>) {
+    Object.assign(this, data);
+  }
+}
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {}
 `,

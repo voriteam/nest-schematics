@@ -78,7 +78,7 @@ describe('/v1/<%= dasherize(name) %>', () => {
 
     it('creates a new <%= singular(classify(name)) %>', async () => {
       // TODO Add fields
-      const body: Create<%= singular(classify(name)) %>Dto = {};
+      const body: new Create<%= singular(classify(name)) %>Dto({});
 
       const response = await request(app.getHttpServer())
         .post('/v1/<%= dasherize(name) %>')
