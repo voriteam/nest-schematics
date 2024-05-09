@@ -3,6 +3,8 @@ import { instanceToPlain } from 'class-transformer';
 
 import { getDataSource } from '@vori/providers/database';
 
+import { makeDatabaseID } from '@vori/utils/VoriRandom';
+
 import { make<%= singular(classify(name)) %> } from '../fakers/<%= singular(name) %>.faker';
 import { <%= singular(classify(name)) %>Dto } from './<%= singular(name) %>.dto';
 
@@ -14,7 +16,7 @@ describe('<%= singular(classify(name)) %>Dto', () => {
   describe('constructor', () => {
     it('converts an entity to a DTO', () => {
       const <%= singular(camelize(name)) %> = make<%= singular(classify(name)) %>({
-        id: faker.datatype.number({ min: 1 }).toString(),
+        id: makeDatabaseID(),
       });
       const dto = instanceToPlain(new <%= singular(classify(name)) %>Dto(<%= singular(camelize(name)) %>));
 

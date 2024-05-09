@@ -21,7 +21,6 @@ describe('Resource Factory', () => {
         .toPromise();
       const files = tree.files;
       expect(files).toEqual([
-        '/users/users.controller.spec.ts',
         '/users/users.controller.ts',
         '/users/users.e2e.spec.ts',
         '/users/users.module.ts',
@@ -42,7 +41,6 @@ describe('Resource Factory', () => {
         .toPromise();
       const files = tree.files;
       expect(files).toEqual([
-        '/_users/_users.controller.spec.ts',
         '/_users/_users.controller.ts',
         '/_users/_users.e2e.spec.ts',
         '/_users/_users.module.ts',
@@ -65,7 +63,6 @@ describe('Resource Factory', () => {
           .toPromise();
         const files = tree.files;
         expect(files).toEqual([
-          '/users/users.controller.spec.ts',
           '/users/users.controller.ts',
           '/users/users.module.ts',
           '/users/users.service.spec.ts',
@@ -137,7 +134,7 @@ export class UsersController {
     @Req() request: RequestWithBannerUser,
     @Body() createUserDto: CreateUserDto
   ): Promise<UserDto> {
-    const user = await this.usersService.create(request.user, createUserDto);
+    const user = await this.usersService.create({bannerID: request.user.bannerID, dto: createUserDto});
     return new UserDto(user);
   }
 
@@ -145,7 +142,7 @@ export class UsersController {
   @ApiOkResponse({ type: UserDto, isArray: true })
   @Get()
   public async findAll(@Req() request: RequestWithBannerUser): Promise<UserDto[]> {
-    const users = await this.usersService.findAll(request.user);
+    const users = await this.usersService.findAll({bannerID: request.user.bannerID});
     return users.map(user => new UserDto(user));
   }
 
@@ -154,7 +151,7 @@ export class UsersController {
   @ApiOkResponse({ type: UserDto })
   @Get(':id')
   public async findOne(@Req() request: RequestWithBannerUser, @Param() params: FindOneParams) {
-    const user = await this.usersService.findOne(request.user, params.id);
+    const user = await this.usersService.findOne({bannerID: request.user.bannerID, id: params.id});
     return new UserDto(user);
   }
 
@@ -164,7 +161,7 @@ export class UsersController {
   @ApiOkResponse({ type: UserDto })
   @Patch(':id')
   public async update(@Req() request: RequestWithBannerUser, @Param() params: FindOneParams, @Body() updateUserDto: UpdateUserDto) {
-    const user = await this.usersService.update(request.user, params.id, updateUserDto);
+    const user = await this.usersService.update({bannerID: request.user.bannerID, id: params.id, dto: updateUserDto});
     return new UserDto(user);
   }
 
@@ -173,7 +170,7 @@ export class UsersController {
   @ApiNoContentResponse()
   @Delete(':id')
   public async remove(@Req() request: RequestWithBannerUser, @Param() params: FindOneParams): Promise<void> {
-    await this.usersService.remove(request.user, params.id);
+    await this.usersService.remove({bannerID: request.user.bannerID, id: params.id});
   }
 }
 `);
@@ -309,6 +306,8 @@ import { instanceToPlain } from 'class-transformer';
 
 import { getDataSource } from '@vori/providers/database';
 
+import { makeDatabaseID } from '@vori/utils/VoriRandom';
+
 import { makeUser } from '../fakers/user.faker';
 import { UserDto } from './user.dto';
 
@@ -320,7 +319,7 @@ describe('UserDto', () => {
   describe('constructor', () => {
     it('converts an entity to a DTO', () => {
       const user = makeUser({
-        id: faker.datatype.number({ min: 1 }).toString(),
+        id: makeDatabaseID(),
       });
       const dto = instanceToPlain(new UserDto(user));
 
@@ -598,37 +597,6 @@ describe('/v1/users', () => {
       );
     });
 
-    it('should generate "UsersController" spec file', () => {
-      expect(tree.readContent('/users/users.controller.spec.ts'))
-        .toEqual(`import { TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { createTestingModule } from '@vori/nest/libs/test_helpers';
-import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
-import { User } from './entities/user.entity';
-
-describe('UsersController', () => {
-  let controller: UsersController;
-
-  beforeEach(async () => {
-    const module: TestingModule = await createTestingModule({
-      imports: [
-        TypeOrmModule.forFeature([User]),
-      ],
-      controllers: [UsersController],
-      providers: [UsersService],
-    }).compile();
-
-    controller = module.get<UsersController>(UsersController);
-  });
-
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-});
-`);
-    });
-
     it('should generate "UsersService" spec file', () => {
       expect(tree.readContent('/users/users.service.spec.ts'))
         .toEqual(`import { TestingModule } from '@nestjs/testing';
@@ -809,7 +777,6 @@ export class UsersModule {}
         .toPromise();
       const files = tree.files;
       expect(files).toEqual([
-        '/users/users.controller.spec.ts',
         '/users/users.controller.ts',
         '/users/users.module.ts',
         '/users/users.service.spec.ts',
@@ -832,7 +799,6 @@ export class UsersModule {}
           .toPromise();
         const files = tree.files;
         expect(files).toEqual([
-          '/users/users.controller.spec.ts',
           '/users/users.controller.ts',
           '/users/users.module.ts',
           '/users/users.service.spec.ts',
@@ -1004,37 +970,6 @@ export class CreateUserDto {
 export class UpdateUserDto extends PartialType(CreateUserDto) {}
 `,
       );
-    });
-
-    it('should generate "UsersController" spec file', () => {
-      expect(tree.readContent('/users/users.controller.spec.ts'))
-        .toEqual(`import { TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { createTestingModule } from '@vori/nest/libs/test_helpers';
-import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
-import { User } from './entities/user.entity';
-
-describe('UsersController', () => {
-  let controller: UsersController;
-
-  beforeEach(async () => {
-    const module: TestingModule = await createTestingModule({
-      imports: [
-        TypeOrmModule.forFeature([User]),
-      ],
-      controllers: [UsersController],
-      providers: [UsersService],
-    }).compile();
-
-    controller = module.get<UsersController>(UsersController);
-  });
-
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-});
-`);
     });
 
     it('should generate "UsersService" spec file', () => {
@@ -2119,9 +2054,6 @@ type Mutation {
     const files: string[] = tree.files;
 
     expect(
-      files.find((filename) => filename === '/foo.controller.spec.ts'),
-    ).toBeDefined();
-    expect(
       files.find((filename) => filename === '/foo.service.spec.ts'),
     ).toBeDefined();
   });
@@ -2136,13 +2068,6 @@ type Mutation {
       .runSchematicAsync('resource', options)
       .toPromise();
     const files: string[] = tree.files;
-
-    expect(
-      files.find((filename) => filename === '/foo.controller.spec.ts'),
-    ).toBeUndefined();
-    expect(
-      files.find((filename) => filename === '/foo.controller.test.ts'),
-    ).toBeDefined();
 
     expect(
       files.find((filename) => filename === '/foo.service.spec.ts'),
