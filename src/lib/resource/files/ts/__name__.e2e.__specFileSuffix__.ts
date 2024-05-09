@@ -78,7 +78,7 @@ describe('/v1/<%= dasherize(name) %>', () => {
 
     it('creates a new <%= singular(classify(name)) %>', async () => {
       // TODO Add fields
-      const body: Create<%= singular(classify(name)) %>Dto = {};
+      const body: new Create<%= singular(classify(name)) %>Dto({});
 
       const response = await request(app.getHttpServer())
         .post('/v1/<%= dasherize(name) %>')
@@ -86,11 +86,10 @@ describe('/v1/<%= dasherize(name) %>', () => {
         .send(instanceToPlain(body))
         .expect(201);
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const <%= singular(camelize(name)) %> = await <%= lowercased(name) %>Service.findOne(
-        user!,
-        response.body.id
-      );
+      const <%= singular(camelize(name)) %> = await <%= lowercased(name) %>Service.findOne({
+        bannerID: banner.id,
+        id: response.body.id,
+      });
       // TODO Assert values stored in database
 
       expect(response.body).toEqual(

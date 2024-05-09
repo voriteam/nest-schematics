@@ -184,7 +184,6 @@ export class UsersController {
         .toEqual(`import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BannerMember } from '@vori/types/User';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
 
@@ -197,45 +196,45 @@ export class UsersService {
     private readonly usersRepository: Repository<User>
   ) {}
 
-  public async create(user: BannerMember, dto: CreateUserDto): Promise<User> {
+  public async create({bannerID, dto}: {bannerID: string, dto: CreateUserDto}): Promise<User> {
     const user = this.dtoToModel(dto);
 
     // TODO Adjust if the data is not associated with a banner
     // NOTE: Set this only on creation. Banner IDs are not allowed to change.
-      user.bannerID = user.bannerID;
+      user.bannerID = bannerID;
 
     return this.usersRepository.save(user);
   }
 
-  public async findAll(user: BannerMember): Promise<User[]> {
+  public async findAll({bannerID}: {bannerID: string}): Promise<User[]> {
     // TODO Adjust the query if the data is not associated with a banner
     return this.usersRepository.find({
       comment: \`controller='UsersService',action='findAll'\`,
-      where: { bannerID: user.bannerID },
+      where: { bannerID },
       order: {
         createdAt: 'DESC',
       },
     });
   }
 
-  public async findOne(user: BannerMember, id: string): Promise<User> {
+  public async findOne({bannerID, id}: {bannerID: string; id: string}): Promise<User> {
     // TODO Adjust the query if the data is not associated with a banner
     return this.usersRepository.findOneOrFail({
       comment: \`controller='UsersService',action='findOne'\`,
-      where: { id: id.toString(), bannerID: user.bannerID },
+      where: { id: id.toString(), bannerID },
     });
   }
 
-  public async update(user: BannerMember, id: string, dto: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(user, id);
+  public async update({bannerID, id, dto}: {bannerID: string; id: string; dto: UpdateUserDto}): Promise<User> {
+    const user = await this.findOne({bannerID, id});
     const updates = this.dtoToModel(dto);
     return this.usersRepository.save(
       this.usersRepository.merge(user, updates)
     );
   }
 
-  public async remove(user: BannerMember, id: string): Promise<void> {
-    const user = await this.findOne(user, id);
+  public async remove({bannerID, id}: {bannerID: string; id: string}): Promise<void> {
+    const user = await this.findOne({bannerID, id});
     await this.usersRepository.remove(user);
   }
 
@@ -292,7 +291,11 @@ export class UserDto extends BaseEntityDto {
   }
 }
 
-export class CreateUserDto {}
+export class CreateUserDto {
+  public constructor(data?: Partial<CreateUserDto>) {
+    Object.assign(this, data);
+  }
+}
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {}
 `,
@@ -415,7 +418,7 @@ describe('/v1/users', () => {
 
     it('creates a new User', async () => {
       // TODO Add fields
-      const body: CreateUserDto = {};
+      const body: new CreateUserDto({});
 
       const response = await request(app.getHttpServer())
         .post('/v1/users')
@@ -423,11 +426,10 @@ describe('/v1/users', () => {
         .send(instanceToPlain(body))
         .expect(201);
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const user = await usersService.findOne(
-        user!,
-        response.body.id
-      );
+      const user = await usersService.findOne({
+        bannerID: banner.id,
+        id: response.body.id,
+      });
       // TODO Assert values stored in database
 
       expect(response.body).toEqual(
@@ -751,7 +753,6 @@ export class UsersController {
         .toEqual(`import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BannerMember } from '@vori/types/User';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -918,7 +919,6 @@ export class UsersController {
         .toEqual(`import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BannerMember } from '@vori/types/User';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
 
@@ -931,23 +931,23 @@ export class UsersService {
     private readonly usersRepository: Repository<User>
   ) {}
 
-  public async create(user: BannerMember, dto: CreateUserDto): Promise<User> {
+  public async create({bannerID, dto}: {bannerID: string, dto: CreateUserDto}): Promise<User> {
     return 'This action adds a new user';
   }
 
-  public async findAll(user: BannerMember): Promise<User[]> {
+  public async findAll({bannerID}: {bannerID: string}): Promise<User[]> {
     return \`This action returns all users\`;
   }
 
-  public async findOne(user: BannerMember, id: string): Promise<User> {
+  public async findOne({bannerID, id}: {bannerID: string; id: string}): Promise<User> {
     return \`This action returns a #\${id} user\`;
   }
 
-  public async update(user: BannerMember, id: string, dto: UpdateUserDto): Promise<User> {
+  public async update({bannerID, id, dto}: {bannerID: string; id: string; dto: UpdateUserDto}): Promise<User> {
     return \`This action updates a #\${id} user\`;
   }
 
-  public async remove(user: BannerMember, id: string): Promise<void> {
+  public async remove({bannerID, id}: {bannerID: string; id: string}): Promise<void> {
     return \`This action removes a #\${id} user\`;
   }
 }
@@ -995,7 +995,11 @@ export class UserDto extends BaseEntityDto {
   }
 }
 
-export class CreateUserDto {}
+export class CreateUserDto {
+  public constructor(data?: Partial<CreateUserDto>) {
+    Object.assign(this, data);
+  }
+}
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {}
 `,
@@ -1115,7 +1119,6 @@ export class UsersController {
         .toEqual(`import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BannerMember } from '@vori/types/User';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -1281,7 +1284,6 @@ export class UsersGateway {
         .toEqual(`import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BannerMember } from '@vori/types/User';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
 
@@ -1294,23 +1296,23 @@ export class UsersService {
     private readonly usersRepository: Repository<User>
   ) {}
 
-  public async create(user: BannerMember, dto: CreateUserDto): Promise<User> {
+  public async create({bannerID, dto}: {bannerID: string, dto: CreateUserDto}): Promise<User> {
     return 'This action adds a new user';
   }
 
-  public async findAll(user: BannerMember): Promise<User[]> {
+  public async findAll({bannerID}: {bannerID: string}): Promise<User[]> {
     return \`This action returns all users\`;
   }
 
-  public async findOne(user: BannerMember, id: string): Promise<User> {
+  public async findOne({bannerID, id}: {bannerID: string; id: string}): Promise<User> {
     return \`This action returns a #\${id} user\`;
   }
 
-  public async update(user: BannerMember, id: string, dto: UpdateUserDto): Promise<User> {
+  public async update({bannerID, id, dto}: {bannerID: string; id: string; dto: UpdateUserDto}): Promise<User> {
     return \`This action updates a #\${id} user\`;
   }
 
-  public async remove(user: BannerMember, id: string): Promise<void> {
+  public async remove({bannerID, id}: {bannerID: string; id: string}): Promise<void> {
     return \`This action removes a #\${id} user\`;
   }
 }
@@ -1356,7 +1358,11 @@ export class UserDto extends BaseEntityDto {
   }
 }
 
-export class CreateUserDto {}
+export class CreateUserDto {
+  public constructor(data?: Partial<CreateUserDto>) {
+    Object.assign(this, data);
+  }
+}
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {}
 `,
@@ -1468,7 +1474,6 @@ export class UsersGateway {
         .toEqual(`import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BannerMember } from '@vori/types/User';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -1634,7 +1639,6 @@ export class UsersResolver {
         .toEqual(`import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BannerMember } from '@vori/types/User';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
@@ -1652,19 +1656,19 @@ export class UsersService {
     return 'This action adds a new user';
   }
 
-  public async findAll(user: BannerMember): Promise<User[]> {
+  public async findAll({bannerID}: {bannerID: string}): Promise<User[]> {
     return \`This action returns all users\`;
   }
 
-  public async findOne(user: BannerMember, id: string): Promise<User> {
+  public async findOne({bannerID, id}: {bannerID: string; id: string}): Promise<User> {
     return \`This action returns a #\${id} user\`;
   }
 
-  public async update(user: BannerMember, id: string, updateUserInput: UpdateUserInput): Promise<User> {
+  public async update(updateUserInput: UpdateUserInput): Promise<User> {
     return \`This action updates a #\${id} user\`;
   }
 
-  public async remove(user: BannerMember, id: string): Promise<void> {
+  public async remove({bannerID, id}: {bannerID: string; id: string}): Promise<void> {
     return \`This action removes a #\${id} user\`;
   }
 }
@@ -1920,7 +1924,6 @@ export class UsersResolver {
         .toEqual(`import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BannerMember } from '@vori/types/User';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
@@ -1938,19 +1941,19 @@ export class UsersService {
     return 'This action adds a new user';
   }
 
-  public async findAll(user: BannerMember): Promise<User[]> {
+  public async findAll({bannerID}: {bannerID: string}): Promise<User[]> {
     return \`This action returns all users\`;
   }
 
-  public async findOne(user: BannerMember, id: string): Promise<User> {
+  public async findOne({bannerID, id}: {bannerID: string; id: string}): Promise<User> {
     return \`This action returns a #\${id} user\`;
   }
 
-  public async update(user: BannerMember, id: string, updateUserInput: UpdateUserInput): Promise<User> {
+  public async update(updateUserInput: UpdateUserInput): Promise<User> {
     return \`This action updates a #\${id} user\`;
   }
 
-  public async remove(user: BannerMember, id: string): Promise<void> {
+  public async remove({bannerID, id}: {bannerID: string; id: string}): Promise<void> {
     return \`This action removes a #\${id} user\`;
   }
 }
