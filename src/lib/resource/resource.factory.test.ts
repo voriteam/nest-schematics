@@ -394,6 +394,10 @@ describe('/v1/users', () => {
     );
   });
 
+  afterAll(async () => {
+    await app.close();
+  });
+
   beforeEach(async () => {
     transactionalContext = new TransactionalTestContext(db);
     await transactionalContext.start();
