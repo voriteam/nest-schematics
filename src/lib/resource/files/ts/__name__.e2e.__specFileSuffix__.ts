@@ -55,6 +55,10 @@ describe('/v1/<%= dasherize(name) %>', () => {
     );
   });
 
+  afterAll(async () => {
+    await app.close();
+  });
+
   beforeEach(async () => {
     transactionalContext = new TransactionalTestContext(db);
     await transactionalContext.start();
