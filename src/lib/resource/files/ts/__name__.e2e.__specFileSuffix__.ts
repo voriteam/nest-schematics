@@ -49,10 +49,8 @@ describe('/v1/<%= dasherize(name) %>', () => {
     app = configureApp(app);
     await app.init();
 
-    db = app.get<DataSource>(DataSource);
-    <%= lowercased(name) %>Service = app.get<<%= classify(name) %>Service>(
-      <%= classify(name) %>Service
-    );
+    db = app.get(DataSource);
+    <%= lowercased(name) %>Service = app.get(<%= classify(name) %>Service);
   });
 
   afterAll(async () => {
@@ -76,17 +74,15 @@ describe('/v1/<%= dasherize(name) %>', () => {
       user = undefined;
       await request(app.getHttpServer())
         .post('/v1/<%= dasherize(name) %>')
-        .set('Authorization', 'Bearer FAKE')
         .expect(401);
     });
 
     it('creates a new <%= singular(classify(name)) %>', async () => {
       // TODO Add fields
-      const body: new Create<%= singular(classify(name)) %>Dto({});
+      const body = new Create<%= singular(classify(name)) %>Dto({});
 
       const response = await request(app.getHttpServer())
         .post('/v1/<%= dasherize(name) %>')
-        .set('Authorization', 'Bearer FAKE')
         .send(instanceToPlain(body))
         .expect(201);
 
@@ -108,7 +104,6 @@ describe('/v1/<%= dasherize(name) %>', () => {
       // No data exists, so nothing returned
       let response = await request(app.getHttpServer())
         .get('/v1/<%= dasherize(name) %>')
-        .set('Authorization', 'Bearer FAKE')
         .expect(200);
       expect(response.body).toEqual([]);
 
@@ -117,7 +112,6 @@ describe('/v1/<%= dasherize(name) %>', () => {
       await makeAndSave<%= singular(classify(name)) %>(db, { banner: otherBanner });
       response = await request(app.getHttpServer())
         .get('/v1/<%= dasherize(name) %>')
-        .set('Authorization', 'Bearer FAKE')
         .expect(200);
       expect(response.body).toEqual([]);
 
@@ -127,11 +121,10 @@ describe('/v1/<%= dasherize(name) %>', () => {
       );
       response = await request(app.getHttpServer())
         .get('/v1/<%= dasherize(name) %>')
-        .set('Authorization', 'Bearer FAKE')
         .expect(200);
       expect(response.body).toEqual(
         orderBy(<%= camelize(name) %>, 'createdAt', 'desc').map(
-          <%= singular(camelize(name)) %> => new <%= singular(classify(name)) %>Dto(<%= singular(camelize(name)) %>)
+          <%= singular(camelize(name)) %> => instanceToPlain(new <%= singular(classify(name)) %>Dto(<%= singular(camelize(name)) %>))
         )
       );
     });
@@ -148,7 +141,6 @@ describe('/v1/<%= dasherize(name) %>', () => {
 
       await request(app.getHttpServer())
         .get(`/v1/<%= dasherize(name) %>/${other<%= singular(classify(name)) %>.id}`)
-        .set('Authorization', 'Bearer FAKE')
         .expect(404);
     });
 
@@ -159,7 +151,6 @@ describe('/v1/<%= dasherize(name) %>', () => {
 
       const response = await request(app.getHttpServer())
         .get(`/v1/<%= dasherize(name) %>/${<%= singular(camelize(name)) %>.id}`)
-        .set('Authorization', 'Bearer FAKE')
         .expect(200);
 
       expect(response.body).toEqual(
@@ -179,7 +170,6 @@ describe('/v1/<%= dasherize(name) %>', () => {
 
       await request(app.getHttpServer())
         .patch(`/v1/<%= dasherize(name) %>/${other<%= singular(classify(name)) %>.id}`)
-        .set('Authorization', 'Bearer FAKE')
         .send({
           // TODO Add a body
         })
@@ -203,7 +193,6 @@ describe('/v1/<%= dasherize(name) %>', () => {
       const body = {};
       const response = await request(app.getHttpServer())
         .patch(`/v1/<%= dasherize(name) %>/${<%= singular(camelize(name)) %>.id}`)
-        .set('Authorization', 'Bearer FAKE')
         .send(body)
         .expect(200);
 
@@ -232,7 +221,6 @@ describe('/v1/<%= dasherize(name) %>', () => {
 
       await request(app.getHttpServer())
         .delete(`/v1/<%= dasherize(name) %>/${other<%= singular(classify(name)) %>.id}`)
-        .set('Authorization', 'Bearer FAKE')
         .expect(404);
 
       await db
@@ -247,13 +235,12 @@ describe('/v1/<%= dasherize(name) %>', () => {
 
       await request(app.getHttpServer())
         .delete(`/v1/<%= dasherize(name) %>/${<%= singular(camelize(name)) %>.id}`)
-        .set('Authorization', 'Bearer FAKE')
         .expect(200);
 
       expect(
         await db
           .getRepository(<%= singular(classify(name)) %>)
-          .exist({ where: { id: <%= singular(camelize(name)) %>.id } })
+          .exists({ where: { id: <%= singular(camelize(name)) %>.id } })
       ).toEqual(false);
     });
   });
