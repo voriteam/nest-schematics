@@ -22,8 +22,8 @@ describe('<%= classify(name) %>Service', () => {
 
     await module.init();
 
-    db = module.get<DataSource>(DataSource);
-    service = module.get<<%= classify(name) %>Service>(<%= classify(name) %>Service);
+    db = module.get(DataSource);
+    service = module.get(<%= classify(name) %>Service);
   });
 
   afterAll(async () => {

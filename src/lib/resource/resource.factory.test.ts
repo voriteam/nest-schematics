@@ -388,10 +388,8 @@ describe('/v1/users', () => {
     app = configureApp(app);
     await app.init();
 
-    db = app.get<DataSource>(DataSource);
-    usersService = app.get<UsersService>(
-      UsersService
-    );
+    db = app.get(DataSource);
+    usersService = app.get(UsersService);
   });
 
   afterAll(async () => {
@@ -415,17 +413,15 @@ describe('/v1/users', () => {
       user = undefined;
       await request(app.getHttpServer())
         .post('/v1/users')
-        .set('Authorization', 'Bearer FAKE')
         .expect(401);
     });
 
     it('creates a new User', async () => {
       // TODO Add fields
-      const body: new CreateUserDto({});
+      const body = new CreateUserDto({});
 
       const response = await request(app.getHttpServer())
         .post('/v1/users')
-        .set('Authorization', 'Bearer FAKE')
         .send(instanceToPlain(body))
         .expect(201);
 
@@ -447,7 +443,6 @@ describe('/v1/users', () => {
       // No data exists, so nothing returned
       let response = await request(app.getHttpServer())
         .get('/v1/users')
-        .set('Authorization', 'Bearer FAKE')
         .expect(200);
       expect(response.body).toEqual([]);
 
@@ -456,7 +451,6 @@ describe('/v1/users', () => {
       await makeAndSaveUser(db, { banner: otherBanner });
       response = await request(app.getHttpServer())
         .get('/v1/users')
-        .set('Authorization', 'Bearer FAKE')
         .expect(200);
       expect(response.body).toEqual([]);
 
@@ -466,11 +460,10 @@ describe('/v1/users', () => {
       );
       response = await request(app.getHttpServer())
         .get('/v1/users')
-        .set('Authorization', 'Bearer FAKE')
         .expect(200);
       expect(response.body).toEqual(
         orderBy(users, 'createdAt', 'desc').map(
-          user => new UserDto(user)
+          user => instanceToPlain(new UserDto(user))
         )
       );
     });
@@ -487,7 +480,6 @@ describe('/v1/users', () => {
 
       await request(app.getHttpServer())
         .get(\`/v1/users/$\{otherUser.id}\`)
-        .set('Authorization', 'Bearer FAKE')
         .expect(404);
     });
 
@@ -498,7 +490,6 @@ describe('/v1/users', () => {
 
       const response = await request(app.getHttpServer())
         .get(\`/v1/users/$\{user.id}\`)
-        .set('Authorization', 'Bearer FAKE')
         .expect(200);
 
       expect(response.body).toEqual(
@@ -518,7 +509,6 @@ describe('/v1/users', () => {
 
       await request(app.getHttpServer())
         .patch(\`/v1/users/$\{otherUser.id}\`)
-        .set('Authorization', 'Bearer FAKE')
         .send({
           // TODO Add a body
         })
@@ -542,7 +532,6 @@ describe('/v1/users', () => {
       const body = {};
       const response = await request(app.getHttpServer())
         .patch(\`/v1/users/$\{user.id}\`)
-        .set('Authorization', 'Bearer FAKE')
         .send(body)
         .expect(200);
 
@@ -571,7 +560,6 @@ describe('/v1/users', () => {
 
       await request(app.getHttpServer())
         .delete(\`/v1/users/$\{otherUser.id}\`)
-        .set('Authorization', 'Bearer FAKE')
         .expect(404);
 
       await db
@@ -586,13 +574,12 @@ describe('/v1/users', () => {
 
       await request(app.getHttpServer())
         .delete(\`/v1/users/$\{user.id}\`)
-        .set('Authorization', 'Bearer FAKE')
         .expect(200);
 
       expect(
         await db
           .getRepository(User)
-          .exist({ where: { id: user.id } })
+          .exists({ where: { id: user.id } })
       ).toEqual(false);
     });
   });
@@ -627,8 +614,8 @@ describe('UsersService', () => {
 
     await module.init();
 
-    db = module.get<DataSource>(DataSource);
-    service = module.get<UsersService>(UsersService);
+    db = module.get(DataSource);
+    service = module.get(UsersService);
   });
 
   afterAll(async () => {
@@ -1002,8 +989,8 @@ describe('UsersService', () => {
 
     await module.init();
 
-    db = module.get<DataSource>(DataSource);
-    service = module.get<UsersService>(UsersService);
+    db = module.get(DataSource);
+    service = module.get(UsersService);
   });
 
   afterAll(async () => {
@@ -1322,7 +1309,7 @@ describe('UsersGateway', () => {
       providers: [UsersGateway, UsersService],
     }).compile();
 
-    gateway = module.get<UsersGateway>(UsersGateway);
+    gateway = module.get(UsersGateway);
   });
 
   it('should be defined', () => {
@@ -1358,8 +1345,8 @@ describe('UsersService', () => {
 
     await module.init();
 
-    db = module.get<DataSource>(DataSource);
-    service = module.get<UsersService>(UsersService);
+    db = module.get(DataSource);
+    service = module.get(UsersService);
   });
 
   afterAll(async () => {
@@ -1682,7 +1669,7 @@ describe('UsersResolver', () => {
       providers: [UsersResolver, UsersService],
     }).compile();
 
-    resolver = module.get<UsersResolver>(UsersResolver);
+    resolver = module.get(UsersResolver);
   });
 
   it('should be defined', () => {
@@ -1718,8 +1705,8 @@ describe('UsersService', () => {
 
     await module.init();
 
-    db = module.get<DataSource>(DataSource);
-    service = module.get<UsersService>(UsersService);
+    db = module.get(DataSource);
+    service = module.get(UsersService);
   });
 
   afterAll(async () => {
@@ -1958,7 +1945,7 @@ describe('UsersResolver', () => {
       providers: [UsersResolver, UsersService],
     }).compile();
 
-    resolver = module.get<UsersResolver>(UsersResolver);
+    resolver = module.get(UsersResolver);
   });
 
   it('should be defined', () => {
@@ -1994,8 +1981,8 @@ describe('UsersService', () => {
 
     await module.init();
 
-    db = module.get<DataSource>(DataSource);
-    service = module.get<UsersService>(UsersService);
+    db = module.get(DataSource);
+    service = module.get(UsersService);
   });
 
   afterAll(async () => {
