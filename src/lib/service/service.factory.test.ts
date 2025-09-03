@@ -30,10 +30,12 @@ describe('Service Factory', () => {
       files.find((filename) => filename === '/foo.service.spec.ts'),
     ).toBeDefined();
     expect(tree.readContent('/foo.service.ts')).toEqual(
-      "import { Injectable } from '@nestjs/common';\n" +
+      "import { Injectable, Logger } from '@nestjs/common';\n" +
         '\n' +
         '@Injectable()\n' +
-        'export class FooService {}\n',
+        'export class FooService {\n' +
+        '  private readonly logger = new Logger(FooService.name);\n' +
+        '}\n',
     );
   });
   it('should manage name as a path', async () => {
@@ -53,10 +55,12 @@ describe('Service Factory', () => {
       files.find((filename) => filename === '/bar/foo.service.spec.ts'),
     ).toBeDefined();
     expect(tree.readContent('/bar/foo.service.ts')).toEqual(
-      "import { Injectable } from '@nestjs/common';\n" +
+      "import { Injectable, Logger } from '@nestjs/common';\n" +
         '\n' +
         '@Injectable()\n' +
-        'export class FooService {}\n',
+        'export class FooService {\n' +
+        '  private readonly logger = new Logger(FooService.name);\n' +
+        '}\n',
     );
   });
   it('should manage name and path', async () => {
@@ -77,10 +81,12 @@ describe('Service Factory', () => {
       files.find((filename) => filename === '/bar/foo.service.spec.ts'),
     ).toBeDefined();
     expect(tree.readContent('/bar/foo.service.ts')).toEqual(
-      "import { Injectable } from '@nestjs/common';\n" +
+      "import { Injectable, Logger } from '@nestjs/common';\n" +
         '\n' +
         '@Injectable()\n' +
-        'export class FooService {}\n',
+        'export class FooService {\n' +
+        '  private readonly logger = new Logger(FooService.name);\n' +
+        '}\n',
     );
   });
   it('should manage name to normalize', async () => {
@@ -97,10 +103,12 @@ describe('Service Factory', () => {
       files.find((filename) => filename === '/foo-bar.service.ts'),
     ).toBeDefined();
     expect(tree.readContent('/foo-bar.service.ts')).toEqual(
-      "import { Injectable } from '@nestjs/common';\n" +
+      "import { Injectable, Logger } from '@nestjs/common';\n" +
         '\n' +
         '@Injectable()\n' +
-        'export class FooBarService {}\n',
+        'export class FooBarService {\n' +
+        '  private readonly logger = new Logger(FooBarService.name);\n' +
+        '}\n',
     );
   });
   it('should manage path to normalize', async () => {
@@ -120,10 +128,12 @@ describe('Service Factory', () => {
       files.find((filename) => filename === '/bar-baz/foo.service.spec.ts'),
     ).toBeDefined();
     expect(tree.readContent('/bar-baz/foo.service.ts')).toEqual(
-      "import { Injectable } from '@nestjs/common';\n" +
+      "import { Injectable, Logger } from '@nestjs/common';\n" +
         '\n' +
         '@Injectable()\n' +
-        'export class FooService {}\n',
+        'export class FooService {\n' +
+        '  private readonly logger = new Logger(FooService.name);\n' +
+        '}\n',
     );
   });
   it('should keep backspaces in path and file name', async () => {
@@ -143,10 +153,12 @@ describe('Service Factory', () => {
       files.find((filename) => filename === '/_bar/_foo.service.spec.ts'),
     ).toBeDefined();
     expect(tree.readContent('/_bar/_foo.service.ts')).toEqual(
-      "import { Injectable } from '@nestjs/common';\n" +
+      "import { Injectable, Logger } from '@nestjs/common';\n" +
         '\n' +
         '@Injectable()\n' +
-        'export class FooService {}\n',
+        'export class FooService {\n' +
+        '  private readonly logger = new Logger(FooService.name);\n' +
+        '}\n',
     );
   });
   it('should manage javascript file', async () => {
