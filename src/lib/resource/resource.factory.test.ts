@@ -631,9 +631,7 @@ describe('UsersService', () => {
     await transactionalContext.finish();
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+  // TODO Add relevant tests with database operations
 });
 `);
     });
@@ -1006,9 +1004,7 @@ describe('UsersService', () => {
     await transactionalContext.finish();
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+  // TODO Add relevant tests with database operations
 });
 `);
     });
@@ -1362,9 +1358,7 @@ describe('UsersService', () => {
     await transactionalContext.finish();
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+  // TODO Add relevant tests with database operations
 });
 `);
     });
@@ -1722,9 +1716,7 @@ describe('UsersService', () => {
     await transactionalContext.finish();
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+  // TODO Add relevant tests with database operations
 });
 `);
     });
@@ -1998,9 +1990,7 @@ describe('UsersService', () => {
     await transactionalContext.finish();
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+  // TODO Add relevant tests with database operations
 });
 `);
     });

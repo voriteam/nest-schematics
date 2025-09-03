@@ -39,7 +39,5 @@ describe('<%= classify(name) %>Service', () => {
     await transactionalContext.finish();
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+  // TODO Add relevant tests with database operations
 });
