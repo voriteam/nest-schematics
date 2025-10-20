@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "SchematicsNestApiDtos",
+  "title": "Nest API DTOs Options Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the resource.",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    },
+    "path": {
+      "type": "string",
+      "format": "path",
+      "description": "The path to create the DTOs.",
+      "visible": false
+    },
+    "sourceRoot": {
+      "type": "string",
+      "description": "Nest DTOs source root."
+    },
+    "language": {
+      "type": "string",
+      "description": "Nest DTOs language."
+    },
+    "spec": {
+      "type": "boolean",
+      "default": true,
+      "description": "Specifies if a spec file is generated."
+    },
+    "specFileSuffix": {
+      "type": "string",
+      "default": "spec",
+      "description": "Specifies the file suffix of spec files."
+    },
+    "flat": {
+      "type": "boolean",
+      "default": false,
+      "description": "Flag to indicate if a directory is created."
+    },
+    "isSwaggerInstalled": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true, uses @nestjs/swagger PartialType."
+    }
+  },
+  "required": ["name"]
+}

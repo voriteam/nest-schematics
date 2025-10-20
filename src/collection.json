@@ -117,6 +117,30 @@
       "description": "Create a Nest resource.",
       "schema": "./lib/resource/schema.json",
       "aliases": ["res"]
+    },
+    "api-service": {
+      "factory": "./lib/api-service/api-service.factory#main",
+      "description": "Create a REST API service.",
+      "schema": "./lib/api-service/schema.json",
+      "aliases": ["api-s"]
+    },
+    "api-controller": {
+      "factory": "./lib/api-controller/api-controller.factory#main",
+      "description": "Create a REST API controller.",
+      "schema": "./lib/api-controller/schema.json",
+      "aliases": ["api-c"]
+    },
+    "api-dtos": {
+      "factory": "./lib/api-dtos/api-dtos.factory#main",
+      "description": "Create REST API DTOs.",
+      "schema": "./lib/api-dtos/schema.json",
+      "aliases": ["api-dto"]
+    },
+    "api-e2e-tests": {
+      "factory": "./lib/api-e2e-tests/api-e2e-tests.factory#main",
+      "description": "Create REST API E2E tests.",
+      "schema": "./lib/api-e2e-tests/schema.json",
+      "aliases": ["api-e2e"]
     }
   }
 }

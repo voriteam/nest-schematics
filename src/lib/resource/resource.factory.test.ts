@@ -19,7 +19,7 @@ describe('Resource Factory', () => {
       const tree = await runner
         .runSchematicAsync('resource', options)
         .toPromise();
-      const files = tree.files;
+      const files = tree.files.sort();
       expect(files).toEqual([
         '/users/users.controller.ts',
         '/users/users.e2e.spec.ts',
@@ -30,7 +30,7 @@ describe('Resource Factory', () => {
         '/users/dto/user.dto.ts',
         '/users/entities/user.entity.ts',
         '/users/fakers/user.faker.ts',
-      ]);
+      ].sort());
     });
     it("should keep underscores in resource's path and file name", async () => {
       const options: ResourceOptions = {
@@ -39,7 +39,7 @@ describe('Resource Factory', () => {
       const tree = await runner
         .runSchematicAsync('resource', options)
         .toPromise();
-      const files = tree.files;
+      const files = tree.files.sort();
       expect(files).toEqual([
         '/_users/_users.controller.ts',
         '/_users/_users.e2e.spec.ts',
@@ -50,7 +50,7 @@ describe('Resource Factory', () => {
         '/_users/dto/_user.dto.ts',
         '/_users/entities/_user.entity.ts',
         '/_users/fakers/_user.faker.ts',
-      ]);
+      ].sort());
     });
     describe('when "crud" option is not enabled', () => {
       it('should generate appropriate files (without dtos)', async () => {
@@ -61,14 +61,14 @@ describe('Resource Factory', () => {
         const tree = await runner
           .runSchematicAsync('resource', options)
           .toPromise();
-        const files = tree.files;
+        const files = tree.files.sort();
         expect(files).toEqual([
           '/users/users.controller.ts',
           '/users/users.module.ts',
           '/users/users.service.spec.ts',
           '/users/users.service.ts',
           '/users/fakers/user.faker.ts',
-        ]);
+        ].sort());
       });
     });
     describe('when "spec" option is not enabled', () => {
@@ -81,13 +81,13 @@ describe('Resource Factory', () => {
         const tree = await runner
           .runSchematicAsync('resource', options)
           .toPromise();
-        const files = tree.files;
+        const files = tree.files.sort();
         expect(files).toEqual([
           '/users/users.controller.ts',
           '/users/users.module.ts',
           '/users/users.service.ts',
           '/users/fakers/user.faker.ts',
-        ]);
+        ].sort());
       });
     });
   });

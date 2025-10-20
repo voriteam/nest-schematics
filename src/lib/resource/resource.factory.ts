@@ -9,6 +9,7 @@ import {
   move,
   noop,
   Rule,
+  schematic,
   SchematicContext,
   SchematicsException,
   Source,
@@ -33,14 +34,56 @@ export function main(options: ResourceOptions): Rule {
   options = transform(options);
 
   return (tree: Tree, context: SchematicContext) => {
-    return branchAndMerge(
-      chain([
-        addMappedTypesDependencyIfApplies(options),
-        mergeSourceRoot(options),
-        addDeclarationToModule(options),
-        mergeWith(generate(options)),
-      ]),
-    )(tree, context);
+    const rules: Rule[] = [
+      addMappedTypesDependencyIfApplies(options),
+      mergeSourceRoot(options),
+      addDeclarationToModule(options),
+    ];
+
+    if (options.type === 'rest' || !options.type) {
+      rules.push(
+        mergeWith(generateBaseFiles(options)),
+        schematic('api-service', {
+          name: options.name,
+          path: options.path,
+          crud: options.crud,
+          spec: options.spec,
+          specFileSuffix: options.specFileSuffix,
+          flat: true,
+          skipImport: true,
+        }),
+        schematic('api-controller', {
+          name: options.name,
+          path: options.path,
+          crud: options.crud,
+          isSwaggerInstalled: options.isSwaggerInstalled,
+          flat: true,
+          skipImport: true,
+        }),
+      );
+      if (options.crud) {
+        rules.push(
+          schematic('api-dtos', {
+            name: options.name,
+            path: options.path,
+            spec: options.spec,
+            specFileSuffix: options.specFileSuffix,
+            isSwaggerInstalled: options.isSwaggerInstalled,
+            flat: true,
+          }),
+          schematic('api-e2e-tests', {
+            name: options.name,
+            path: options.path,
+            specFileSuffix: options.specFileSuffix,
+            flat: true,
+          }),
+        );
+      }
+    } else {
+      rules.push(mergeWith(generate(options)));
+    }
+
+    return branchAndMerge(chain(rules))(tree, context);
   };
 }
 
@@ -77,11 +120,12 @@ function generate(options: ResourceOptions): Source {
     apply(url(join('./files' as Path, options.language)), [
       filter((path) => {
         if (path.endsWith('.e2e.__specFileSuffix__.ts')) {
-          return (
-            options.type === 'rest' && options.crud
-          );
+          return options.type === 'rest' && options.crud;
         }
-        if (path.endsWith('.dto.ts') || path.endsWith('.dto.__specFileSuffix__.ts')) {
+        if (
+          path.endsWith('.dto.ts') ||
+          path.endsWith('.dto.__specFileSuffix__.ts')
+        ) {
           return (
             options.type !== 'graphql-code-first' &&
             options.type !== 'graphql-schema-first' &&
@@ -113,7 +157,10 @@ function generate(options: ResourceOptions): Source {
         ) {
           return options.type === 'microservice' || options.type === 'rest';
         }
-        if (path.endsWith('.gateway.ts') || path.endsWith('.gateway.__specFileSuffix__.ts')) {
+        if (
+          path.endsWith('.gateway.ts') ||
+          path.endsWith('.gateway.__specFileSuffix__.ts')
+        ) {
           return options.type === 'ws';
         }
         if (path.includes('@ent')) {
@@ -128,8 +175,42 @@ function generate(options: ResourceOptions): Source {
         ? noop()
         : filter((path) => {
             const suffix = `.__specFileSuffix__.ts`;
-            return !path.endsWith(suffix)
-        }),
+            return !path.endsWith(suffix);
+          }),
+      template({
+        ...strings,
+        ...options,
+        lowercased: (name: string) => {
+          const classifiedName = classify(name);
+          return (
+            classifiedName.charAt(0).toLowerCase() + classifiedName.slice(1)
+          );
+        },
+        singular: (name: string) => pluralize.singular(name),
+        ent: (name: string) => name + '.entity',
+      }),
+      move(options.path),
+    ])(context);
+}
+
+function generateBaseFiles(options: ResourceOptions): Source {
+  return (context: SchematicContext) =>
+    apply(url(join('./files' as Path, options.language)), [
+      // Only keep module, entities, and fakers
+      filter((path) => {
+        return (
+          path.endsWith('.module.ts') ||
+          path.includes('/entities/') ||
+          path.includes('/fakers/')
+        );
+      }),
+      // Filter entities based on crud option
+      filter((path) => {
+        if (path.includes('@ent')) {
+          return options.crud;
+        }
+        return true;
+      }),
       template({
         ...strings,
         ...options,
