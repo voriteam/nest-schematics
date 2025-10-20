@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "SchematicsNestApiE2eTests",
+  "title": "Nest API E2E Tests Options Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the resource.",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    },
+    "path": {
+      "type": "string",
+      "format": "path",
+      "description": "The path to create the e2e tests.",
+      "visible": false
+    },
+    "sourceRoot": {
+      "type": "string",
+      "description": "Nest e2e tests source root."
+    },
+    "language": {
+      "type": "string",
+      "description": "Nest e2e tests language."
+    },
+    "specFileSuffix": {
+      "type": "string",
+      "default": "spec",
+      "description": "Specifies the file suffix of spec files."
+    },
+    "flat": {
+      "type": "boolean",
+      "default": false,
+      "description": "Flag to indicate if a directory is created."
+    }
+  },
+  "required": ["name"]
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "SchematicsNestApiService",
+  "title": "Nest API Service Options Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the service.",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    },
+    "path": {
+      "type": "string",
+      "format": "path",
+      "description": "The path to create the service.",
+      "visible": false
+    },
+    "sourceRoot": {
+      "type": "string",
+      "description": "Nest service source root."
+    },
+    "language": {
+      "type": "string",
+      "description": "Nest service language."
+    },
+    "spec": {
+      "type": "boolean",
+      "default": true,
+      "description": "Specifies if a spec file is generated."
+    },
+    "specFileSuffix": {
+      "type": "string",
+      "default": "spec",
+      "description": "Specifies the file suffix of spec files."
+    },
+    "flat": {
+      "type": "boolean",
+      "default": false,
+      "description": "Flag to indicate if a directory is created."
+    },
+    "skipImport": {
+      "type": "boolean",
+      "default": false,
+      "description": "Flag to skip the module import."
+    },
+    "module": {
+      "type": "string",
+      "description": "The path to insert the service declaration."
+    },
+    "crud": {
+      "type": "boolean",
+      "default": true,
+      "description": "When true, CRUD entry points are generated."
+    }
+  },
+  "required": ["name"]
+}
