@@ -46,6 +46,7 @@ export function main(options: ResourceOptions): Rule {
         schematic('api-service', {
           name: options.name,
           path: options.path,
+          sourceRoot: options.sourceRoot,
           crud: options.crud,
           spec: options.spec,
           specFileSuffix: options.specFileSuffix,
@@ -55,6 +56,7 @@ export function main(options: ResourceOptions): Rule {
         schematic('api-controller', {
           name: options.name,
           path: options.path,
+          sourceRoot: options.sourceRoot,
           crud: options.crud,
           isSwaggerInstalled: options.isSwaggerInstalled,
           flat: true,
@@ -66,6 +68,7 @@ export function main(options: ResourceOptions): Rule {
           schematic('api-dtos', {
             name: options.name,
             path: options.path,
+            sourceRoot: options.sourceRoot,
             spec: options.spec,
             specFileSuffix: options.specFileSuffix,
             isSwaggerInstalled: options.isSwaggerInstalled,
@@ -74,6 +77,7 @@ export function main(options: ResourceOptions): Rule {
           schematic('api-e2e-tests', {
             name: options.name,
             path: options.path,
+            sourceRoot: options.sourceRoot,
             specFileSuffix: options.specFileSuffix,
             flat: true,
           }),
